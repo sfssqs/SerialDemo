@@ -79,12 +79,13 @@ static int set_port_attr(int fd, int baudrate, int databit, const char *stopbit,
 	set_baudrate(&opt, baudrate);
 
 	// enable the receiver and set local mode ...
-	// opt.c_cflag |= CLOCAL | CREAD;
+	opt.c_cflag |= CLOCAL | CREAD;
 
+	// (our slave device may not support)
 	// Hardware flow control off
-	 opt.c_cflag &= ~CRTSCTS;
+	opt.c_cflag &= ~CRTSCTS;
 	// Hardware flow control on
-	// opt.c_cflag |= CRTSCTS;
+	//  opt.c_cflag |= CRTSCTS;
 
 	/* | CRTSCTS */
 	set_data_bit(&opt, databit);
@@ -99,7 +100,7 @@ static int set_port_attr(int fd, int baudrate, int databit, const char *stopbit,
 	opt.c_oflag = 0;
 	opt.c_lflag |= 0;
 
-	// Original output
+	// Raw output
 	opt.c_oflag &= ~OPOST;
 	// Classical output
 	// opt.c_oflag |= OPOST;
