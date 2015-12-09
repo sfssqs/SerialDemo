@@ -14,7 +14,11 @@ int main(int argc, char *argv[]) {
 	int len, ret;
 	char buf[] = "hello";
 
-	fd = open(DEV_NAME, O_RDWR | O_NOCTTY);
+	/*
+	 * O_NOCTTY: program can not be control by keyboard etc.
+	 * O_NDELAY: program don not care about DCD single line state
+	 */
+	fd = open(DEV_NAME, O_RDWR | O_NOCTTY/* | O_NDELAY*/);
 	if (fd < 0) {
 		perror("Open device error\n");
 	}

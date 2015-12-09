@@ -78,20 +78,35 @@ static int set_port_attr(int fd, int baudrate, int databit, const char *stopbit,
 
 	set_baudrate(&opt, baudrate);
 
-	// [Begin] :  write success but read failed
-	opt.c_cflag |= CLOCAL | CREAD;
-	// opt.c_cflag &= ~CRTSCTS;
-	//[End]
+	// enable the receiver and set local mode ...
+	// opt.c_cflag |= CLOCAL | CREAD;
+
+	// Hardware flow control off
+	 opt.c_cflag &= ~CRTSCTS;
+	// Hardware flow control on
+	// opt.c_cflag |= CRTSCTS;
 
 	/* | CRTSCTS */
 	set_data_bit(&opt, databit);
 	set_parity(&opt, parity);
 	set_stopbit(&opt, stopbit);
+
+	// Original, no need CR
+	// opt.c_cflag |= ~(ICANON | ECHO | ECHOE | ISIG);
+	// Classical, designed to line, need CR or LF
+	// opt.c_cflag |= (ICANON | ECHO | ECHOE);
+
 	opt.c_oflag = 0;
 	opt.c_lflag |= 0;
+
+	// Original output
 	opt.c_oflag &= ~OPOST;
+	// Classical output
+	// opt.c_oflag |= OPOST;
+
 	opt.c_cc[VTIME] = vtime;
 	opt.c_cc[VMIN] = vmin;
+
 	tcflush(fd, TCIFLUSH);
 
 	return (tcsetattr(fd, TCSANOW, &opt));
